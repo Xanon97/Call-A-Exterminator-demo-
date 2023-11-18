@@ -1,2 +1,2 @@
 main:
-	x86_64-w64-mingw32-gcc -o game main.c -lSDL2_image `/usr/x86_64-w64-mingw32/bin/sdl2-config --cflags --libs`
+	x86_64-w64-mingw32-gcc -o game main.c -lmingw32 -lSDL2main -lSDL2_image `/usr/x86_64-w64-mingw32/bin/sdl2-config --cflags --libs`
