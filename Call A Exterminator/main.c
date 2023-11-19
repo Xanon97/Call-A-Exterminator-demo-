@@ -62,19 +62,23 @@ void draw_world(){
 	SDL_RenderCopy(renderer, texture3, &wall_sprt, &wall);
 	SDL_RenderCopy(renderer, texture2, &srcrect2, &dstrect2);
 }
+SDL_Surface* image;
 
 //create player tiles
 void draw_player(){
 	//character tiles
-	SDL_Surface* image;
-	image = IMG_Load("assets/charRight_spritesheet.png");
+	//SDL_Surface* image;
+	//image = IMG_Load("assets/charRight_spritesheet.png");
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,image);
 	SDL_Rect srcrect = {rx,ry,100,100};
 	SDL_Rect dstrect = {player.x, player.y, player.w = 100, player.h = 100};
 	//copy textures of player sprite to rectangle
 	SDL_RenderCopy(renderer, texture, &srcrect, &dstrect);
+	SDL_RenderPresent(renderer);
 	//free image from memory
-	SDL_FreeSurface(image);
+	//SDL_FreeSurface(image);
+	SDL_DestroyTexture(texture);
+	//find a way to seperate rendering and updating player position/size in the future
 }
 
 //create a window
@@ -97,6 +101,9 @@ void clear(){
 
 int main(int args, char** argv){
 	Window();
+	image = IMG_Load("assets/charRight_spritesheet.png");
+	SDL_FreeSurface(image);
+
 	//initialize SDL2 and SDL_image
 	SDL_Init(SDL_INIT_VIDEO);
 	if(SDL_Init(SDL_INIT_VIDEO)<0){
@@ -112,15 +119,15 @@ int main(int args, char** argv){
 	bool quit = false;
 	while(!quit){
 		//gravity
-		gravity();
-		//clears previous rendered objects from screen
-		clear();
+		//gravity();
 		//player and world sprites
-		draw_world();
+		//draw_world();
 		draw_player();
+		//clear previous frames
+		clear();
 		while(SDL_PollEvent(&event)!=0){
-			system("clear");
-			printf("x = %d y = %d rx = %d ry = %d\n",player.x,player.y,rx,ry);
+		//	system("clear");
+		//	printf("x = %d y = %d rx = %d ry = %d\n",player.x,player.y,rx,ry);
 
 			//controls
 			if(event.type == SDL_KEYDOWN){
@@ -154,8 +161,6 @@ int main(int args, char** argv){
 			if(event.type == SDL_QUIT)
 				quit = true;
 		}
-	//shows rendered objects
-	SDL_RenderPresent(renderer);
 	}
 
 	//end of game loop
