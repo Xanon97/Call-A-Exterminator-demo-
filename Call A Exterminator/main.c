@@ -11,25 +11,30 @@ SDL_Renderer * renderer;
 SDL_Event event;
 
 //player variable struct
-struct char_struct{
-	int x;
-	int y; 
-	int w; 
-	int h;
+struct Player
+{
+	SDL_Rect src, dst;
 }player;
 
 //level_0 object variable struct
-struct lvl_0{
+struct level_0
+{
+	SDL_Rect src, dst;
+
+}door,wall,roof;
+
+struct floor{
 	int x;
 	int y;
 	int w;
 	int h;
-}door,grnd;
+}grnd;
 
-//source rect coordinates
-int rx, ry;
-int rx2, ry2;
-int rx3, ry3;
+//surface and texture pointers
+SDL_Surface* image;
+SDL_Surface* image2;
+SDL_Surface* image3;
+SDL_Texture* texture;
 
 void draw_world(){
 	//grass
@@ -37,47 +42,113 @@ void draw_world(){
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 	SDL_RenderFillRect(renderer, &grass);
 	//walls & roof
-	SDL_Surface* image3;
-	image3 = IMG_Load("assets/house_texture.png");
-	SDL_Texture* texture3 = SDL_CreateTextureFromSurface(renderer,image3);
-	SDL_Rect wall_sprt = {rx3 = 102,ry3 = 2,100,100};
-	SDL_Rect wall;
-
-	for(int i;i<4;i++)
-	{
-		wall.w = 100;
-		wall.h = 100;
-		wall.x = i * 100;
-		wall.y = i *100 + 200;
+	texture = SDL_CreateTextureFromSurface(renderer,image3);
+	for(int wall_row1 = 0;wall_row1<3;wall_row1++)
+	{	
+		wall.src.x = 304;
+		wall.src.y = 2;
+		wall.src.w = 100;
+		wall.src.h = 100;
 		
+		wall.dst.x = door.dst.x + wall_row1 * 100;
+		wall.dst.y = door.dst.y-100;
+		wall.dst.w = 100;
+		wall.dst.h = 100;
+		SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
+		for(int wall_row2 = 0;wall_row2<2;wall_row2++)
+		{
+			wall.dst.x = 100 + door.dst.x + wall_row2 * 100;
+			wall.dst.y = door.dst.y;
+			wall.dst.w = 100;
+			wall.dst.h = 100;
+			SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
+
+		}
+		for(int wall_row3 = 0;wall_row3<2;wall_row3++)
+		{
+			wall.dst.x = 100 + door.dst.x + wall_row3 * 100;
+			wall.dst.y = door.dst.y + 100;
+			wall.dst.w = 100;
+			wall.dst.h = 100;
+			SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
+
+		}
+		//draws roof of house
+		for(int roof_row1 = 0;roof_row1 < 4;roof_row1++)
+		{			
+		roof.src.x = 0;
+		roof.src.y = 0;
+		roof.src.w = 100;
+		roof.src.h = 100;
+
+		roof.dst.x = door.dst.x - 100 + roof_row1 * 100;
+		roof.dst.y = door.dst.y-200;
+		roof.dst.w = 100;
+		roof.dst.h = 100;
+		SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
+		}
+		for(int roof_row2 = 0;roof_row2 < 3;roof_row2++)
+		{			
+		roof.src.x = 0;
+		roof.src.y = 0;
+		roof.src.w = 100;
+		roof.src.h = 100;
+
+		roof.dst.x = door.dst.x + roof_row2 * 100;
+		roof.dst.y = door.dst.y - 300;
+		roof.dst.w = 100;
+		roof.dst.h = 100;
+		SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
+		}
+		for(int roof_row2 = 0;roof_row2 < 2;roof_row2++)
+		{			
+		roof.src.x = 0;
+		roof.src.y = 0;
+		roof.src.w = 100;
+		roof.src.h = 100;
+
+		roof.dst.x = 100 + door.dst.x + roof_row2 * 100;
+		roof.dst.y = door.dst.y - 400;
+		roof.dst.w = 100;
+		roof.dst.h = 100;
+		SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
+		}
+
+
+
+
 	}
-	//door
-	SDL_Surface* image2;
-	image2 = IMG_Load("assets/door.png");
-	SDL_Texture* texture2 = SDL_CreateTextureFromSurface(renderer,image2);
-	SDL_Rect srcrect2 = {rx2,ry2,100,200};
-	SDL_Rect dstrect2 = {door.x = 450, door.y = 400, door.w = 100, door.h = 200};
+	//door	
+	texture = SDL_CreateTextureFromSurface(renderer,image2);
+	door.src.x;
+	door.src.y;
+	door.src.w = 100;
+	door.src.h = 200;
+	
+	door.dst.x = 450; 
+	door.dst.y = 400; 
+	door.dst.w = 100; 
+	door.dst.h = 200;
 
 	//copy textures to rects
-	SDL_RenderCopy(renderer, texture3, &wall_sprt, &wall);
-	SDL_RenderCopy(renderer, texture2, &srcrect2, &dstrect2);
+	SDL_RenderCopy(renderer, texture, &door.src, &door.dst);
 }
-SDL_Surface* image;
-
 //create player tiles
 void draw_player(){
 	//character tiles
-	//SDL_Surface* image;
-	//image = IMG_Load("assets/charRight_spritesheet.png");
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,image);
-	SDL_Rect srcrect = {rx,ry,100,100};
-	SDL_Rect dstrect = {player.x, player.y, player.w = 100, player.h = 100};
+	texture = SDL_CreateTextureFromSurface(renderer,image);
+	player.src.x;
+	player.src.y;
+	player.src.w = 100;
+	player.src.h = 100;
+
+	player.dst.x; 
+	player.dst.y;
+	player.dst.w = 100; 
+	player.dst.h = 100;
+	
 	//copy textures of player sprite to rectangle
-	SDL_RenderCopy(renderer, texture, &srcrect, &dstrect);
-	SDL_RenderPresent(renderer);
-	//free image from memory
-	//SDL_FreeSurface(image);
-	SDL_DestroyTexture(texture);
+	SDL_RenderCopy(renderer, texture, &player.src, &player.dst);	
 	//find a way to seperate rendering and updating player position/size in the future
 }
 
@@ -89,8 +160,8 @@ void Window(){
 }
 void gravity(){
 	int g_force = 10;
-	if(player.x>=grnd.w||player.y<=490){
-		player.y += g_force;
+	if(player.dst.x>=grnd.w||player.dst.y<=490){
+		player.dst.y += g_force;
 	}
 }
 
@@ -101,8 +172,10 @@ void clear(){
 
 int main(int args, char** argv){
 	Window();
-	image = IMG_Load("assets/charRight_spritesheet.png");
-	SDL_FreeSurface(image);
+	//Create_Textures();
+	image3 = IMG_Load("assets/house_texture.png");
+	image2 = IMG_Load("assets/door.png");
+	image = IMG_Load("assets/charRight_spritesheet.png");	
 
 	//initialize SDL2 and SDL_image
 	SDL_Init(SDL_INIT_VIDEO);
@@ -119,49 +192,55 @@ int main(int args, char** argv){
 	bool quit = false;
 	while(!quit){
 		//gravity
-		//gravity();
-		//player and world sprites
-		//draw_world();
+		gravity();
+		//draws player and world sprites
+		draw_world();
 		draw_player();
+		//shows image on screen
+		SDL_RenderPresent(renderer);
 		//clear previous frames
 		clear();
 		while(SDL_PollEvent(&event)!=0){
-		//	system("clear");
-		//	printf("x = %d y = %d rx = %d ry = %d\n",player.x,player.y,rx,ry);
+		//system("clear");
+		//printf("x = %d y = %d rx = %d ry = %d\n",player.x,player.y,rx,ry);
 
 			//controls
 			if(event.type == SDL_KEYDOWN){
 				switch(event.key.keysym.sym)
 				{
 				case SDLK_a: 
-					ry = 100;
-					player.x -= 10;
-					rx -= 100;	
+					player.src.y = 100;
+					player.dst.x -= 10;
+					player.src.x -= 100;	
 					break;
 				case SDLK_d:
-					ry = 0;
-					player.x += 10;
-					rx += 100;
+					player.src.y = 0;
+					player.dst.x += 10;
+					player.src.x += 100;
 					break;
 				}
 			}	
 			
 			//corrects position of destination square coordinates
-			if(rx > 100)
-				rx = 0;	
-			if(rx < 0)
-				rx = 100;
+			if(player.src.x > 100)
+				player.src.x = 0;	
+			if(player.src.x < 0)
+				player.src.x = 100;
 			//checks screen boundary
-			if(player.x < 0)
-				player.x += 10;
-			if(player.x > Width - 100)
-				player.x -= 10;
+			if(player.dst.x < 0)
+				player.dst.x += 10;
+			if(player.dst.x > Width - 100)
+				player.dst.x -= 10;
 
 			//exits game
 			if(event.type == SDL_QUIT)
 				quit = true;
 		}
 	}
+
+	//clean up
+	SDL_FreeSurface(image);SDL_FreeSurface(image2);SDL_FreeSurface(image3);
+	SDL_DestroyTexture(texture);
 
 	//end of game loop
 	SDL_DestroyRenderer(renderer);
