@@ -40,7 +40,7 @@ SDL_Texture* texture;
 
 
 //level loader
-void load_level(current_level)
+void load_level(int current_level)
 {
 
 	switch(current_level)
@@ -53,10 +53,24 @@ void load_level(current_level)
 			{
 				for(int j = 0;j<map_height;j++)
 				{
-				if(level[map_width][map_height] == block)
+				if(level[i][j] == block)
 				{
-					SDL_Rect test_Block = {i * map_width, j * map_height, tile_size, tile_size};
+					SDL_Rect test_Block = {j * tile_size, i * tile_size, tile_size, tile_size};
 					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					SDL_RenderFillRect(renderer, &test_Block);
+				}
+				}
+			}
+			break;		
+		case 2:
+			for(int i = 0;i<map_width;i++)
+			{
+				for(int j = 0;j<map_height;j++)
+				{
+				if(level[i][j] == block)
+				{
+					SDL_Rect test_Block = {j * tile_size, i * tile_size, tile_size, tile_size};
+					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 					SDL_RenderFillRect(renderer, &test_Block);
 				}
 				}

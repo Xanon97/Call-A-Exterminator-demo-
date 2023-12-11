@@ -6,19 +6,19 @@
 #define map_width 7
 #define map_height 7
 
-#define block '#'
+#define block 1
 
 int current_level = 0;
 
-char* level[map_width][map_height] =
+int level[map_width][map_height] =
 {
-	"#######",
-	"#     #",
-	"#     #",
-	"#     #",
-	"#  #  #",
-	"#     #",
-	"#######"
+	{1,1,1,1,1,1,1},
+	{1,0,0,0,0,0,1},
+	{1,1,1,1,1,0,1},
+	{1,0,0,0,1,0,1},
+	{1,0,0,0,1,0,1},
+	{1,0,0,0,1,0,1},
+	{1,1,1,1,1,1,1},
 };
 
 
