@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "level_map.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,36 @@ SDL_Surface* image;
 SDL_Surface* image2;
 SDL_Surface* image3;
 SDL_Texture* texture;
+
+
+
+//level loader
+void load_level(current_level)
+{
+
+	switch(current_level)
+	{
+		case 0:
+			draw_world();
+			break;
+		case 1:
+			for(int i = 0;i<map_width;i++)
+			{
+				for(int j = 0;j<map_height;j++)
+				{
+				if(level[map_width][map_height] == block)
+				{
+					SDL_Rect test_Block = {i * map_width, j * map_height, tile_size, tile_size};
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					SDL_RenderFillRect(renderer, &test_Block);
+				}
+				}
+			}
+			break;
+		default:
+			printf("level is not available\n");
+	}
+}
 
 void draw_world(){
 	//grass
@@ -158,9 +189,25 @@ void Window(){
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	SDL_SetRenderDrawColor(renderer, 127, 0, 255, 255);
 }
+
+//check for rectangle collisions
+bool collideRect()
+{
+
+
+	bool collide = SDL_HasIntersection(&player.dst, &door.dst);
+
+	if(collide)
+	{
+		printf("player is touching door\n");
+		current_level = 1;
+		return true;
+	}
+}
+
 void gravity(){
 	int g_force = 10;
-	if(player.dst.x>=grnd.w||player.dst.y<=490){
+	if(player.dst.y  + player.dst.h <= 591){
 		player.dst.y += g_force;
 	}
 }
@@ -171,7 +218,7 @@ void clear(){
 }
 
 int main(int args, char** argv){
-	Window();
+	Window();		
 	//Create_Textures();
 	image3 = IMG_Load("assets/house_texture.png");
 	image2 = IMG_Load("assets/door.png");
@@ -191,17 +238,19 @@ int main(int args, char** argv){
 
 	bool quit = false;
 	while(!quit){
+		//clear frames
+		clear();
+		//clear print output
+		system("clear");
+		collideRect();
 		//gravity
 		gravity();
 		//draws player and world sprites
-		draw_world();
+		load_level(current_level);
 		draw_player();
 		//shows image on screen
 		SDL_RenderPresent(renderer);
-		//clear previous frames
-		clear();
 		while(SDL_PollEvent(&event)!=0){
-		//system("clear");
 		//printf("x = %d y = %d rx = %d ry = %d\n",player.x,player.y,rx,ry);
 
 			//controls
@@ -237,7 +286,7 @@ int main(int args, char** argv){
 				quit = true;
 		}
 	}
-
+	
 	//clean up
 	SDL_FreeSurface(image);SDL_FreeSurface(image2);SDL_FreeSurface(image3);
 	SDL_DestroyTexture(texture);
