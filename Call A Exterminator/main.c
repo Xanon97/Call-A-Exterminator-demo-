@@ -36,24 +36,75 @@ SDL_Surface* image;
 SDL_Surface* image2;
 SDL_Surface* image3;
 SDL_Texture* texture;
+SDL_Texture* door_texture;
 
 
 
 //level loader
 void load_level(int current_level)
 {
+	//walls & roof
+	texture = SDL_CreateTextureFromSurface(renderer,image3);
+	door_texture = SDL_CreateTextureFromSurface(renderer,image2);
+
 
 	switch(current_level)
 	{
 		case 0:
-			draw_world();
+			for(int i = 0;i<map_width;i++)
+			{
+				for(int j = 0;j<map_height;j++)
+				{
+				if(level_0[i][j] == _grass_)
+				{
+					SDL_Rect grass = {j * tile_size, i * tile_size, tile_size, tile_size};
+					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+					SDL_RenderFillRect(renderer, &grass);
+				}
+				if(level_0[j][i] == Wall)
+				{
+					wall.src.x = 304;
+					wall.src.y = 2;
+					wall.src.w = 100;
+					wall.src.h = 100;
+					wall.dst.x = i * tile_size;
+					wall.dst.y = j * tile_size;
+					wall.dst.w = tile_size;
+					wall.dst.h = tile_size;
+					SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
+				}
+				if(level_0[j][i] == Roof)
+				{
+					roof.src.x = 0;
+					roof.src.y = 0;
+					roof.src.w = 100;
+					roof.src.h = 100;
+					roof.dst.x = i * tile_size;
+					roof.dst.y = j * tile_size;
+					roof.dst.w = tile_size;
+					roof.dst.h = tile_size;
+					SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
+				}
+				}
+			}
+			//door	
+			door.src.x;
+			door.src.y;
+			door.src.w = 100;
+			door.src.h = 200;
+			door.dst.x = 400; 
+			door.dst.y = 400; 
+			door.dst.w = 100;
+			door.dst.h = 200;
+			//copy textures to door rect
+			SDL_RenderCopy(renderer, door_texture, &door.src, &door.dst);
 			break;
 		case 1:
 			for(int i = 0;i<map_width;i++)
 			{
 				for(int j = 0;j<map_height;j++)
 				{
-				if(level[i][j] == block)
+				if(level_1[i][j] == block)
 				{
 					SDL_Rect test_Block = {j * tile_size, i * tile_size, tile_size, tile_size};
 					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -61,123 +112,12 @@ void load_level(int current_level)
 				}
 				}
 			}
-			break;		
-		case 2:
-			for(int i = 0;i<map_width;i++)
-			{
-				for(int j = 0;j<map_height;j++)
-				{
-				if(level[i][j] == block)
-				{
-					SDL_Rect test_Block = {j * tile_size, i * tile_size, tile_size, tile_size};
-					SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-					SDL_RenderFillRect(renderer, &test_Block);
-				}
-				}
-			}
 			break;
 		default:
-			printf("level is not available\n");
+			printf("out of range level\n");
 	}
 }
 
-void draw_world(){
-	//grass
-	SDL_Rect grass = {grnd.x, grnd.y = Height - 100, grnd.w = Width, grnd.h = 100};
-	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	SDL_RenderFillRect(renderer, &grass);
-	//walls & roof
-	texture = SDL_CreateTextureFromSurface(renderer,image3);
-	for(int wall_row1 = 0;wall_row1<3;wall_row1++)
-	{	
-		wall.src.x = 304;
-		wall.src.y = 2;
-		wall.src.w = 100;
-		wall.src.h = 100;
-		
-		wall.dst.x = door.dst.x + wall_row1 * 100;
-		wall.dst.y = door.dst.y-100;
-		wall.dst.w = 100;
-		wall.dst.h = 100;
-		SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
-		for(int wall_row2 = 0;wall_row2<2;wall_row2++)
-		{
-			wall.dst.x = 100 + door.dst.x + wall_row2 * 100;
-			wall.dst.y = door.dst.y;
-			wall.dst.w = 100;
-			wall.dst.h = 100;
-			SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
-
-		}
-		for(int wall_row3 = 0;wall_row3<2;wall_row3++)
-		{
-			wall.dst.x = 100 + door.dst.x + wall_row3 * 100;
-			wall.dst.y = door.dst.y + 100;
-			wall.dst.w = 100;
-			wall.dst.h = 100;
-			SDL_RenderCopy(renderer, texture, &wall.src, &wall.dst);
-
-		}
-		//draws roof of house
-		for(int roof_row1 = 0;roof_row1 < 4;roof_row1++)
-		{			
-		roof.src.x = 0;
-		roof.src.y = 0;
-		roof.src.w = 100;
-		roof.src.h = 100;
-
-		roof.dst.x = door.dst.x - 100 + roof_row1 * 100;
-		roof.dst.y = door.dst.y-200;
-		roof.dst.w = 100;
-		roof.dst.h = 100;
-		SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
-		}
-		for(int roof_row2 = 0;roof_row2 < 3;roof_row2++)
-		{			
-		roof.src.x = 0;
-		roof.src.y = 0;
-		roof.src.w = 100;
-		roof.src.h = 100;
-
-		roof.dst.x = door.dst.x + roof_row2 * 100;
-		roof.dst.y = door.dst.y - 300;
-		roof.dst.w = 100;
-		roof.dst.h = 100;
-		SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
-		}
-		for(int roof_row2 = 0;roof_row2 < 2;roof_row2++)
-		{			
-		roof.src.x = 0;
-		roof.src.y = 0;
-		roof.src.w = 100;
-		roof.src.h = 100;
-
-		roof.dst.x = 100 + door.dst.x + roof_row2 * 100;
-		roof.dst.y = door.dst.y - 400;
-		roof.dst.w = 100;
-		roof.dst.h = 100;
-		SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
-		}
-
-
-
-
-	}
-	//door	
-	texture = SDL_CreateTextureFromSurface(renderer,image2);
-	door.src.x;
-	door.src.y;
-	door.src.w = 100;
-	door.src.h = 200;
-	
-	door.dst.x = 450; 
-	door.dst.y = 400; 
-	door.dst.w = 100; 
-	door.dst.h = 200;
-
-	//copy textures to rects
-	SDL_RenderCopy(renderer, texture, &door.src, &door.dst);
-}
 //create player tiles
 void draw_player(){
 	//character tiles
@@ -303,7 +243,7 @@ int main(int args, char** argv){
 	
 	//clean up
 	SDL_FreeSurface(image);SDL_FreeSurface(image2);SDL_FreeSurface(image3);
-	SDL_DestroyTexture(texture);
+	SDL_DestroyTexture(texture);SDL_DestroyTexture(door_texture);
 
 	//end of game loop
 	SDL_DestroyRenderer(renderer);
