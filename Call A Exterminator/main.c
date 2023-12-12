@@ -43,6 +43,7 @@ SDL_Texture* door_texture;
 //level loader
 void load_level(int current_level)
 {
+
 	//walls & roof
 	texture = SDL_CreateTextureFromSurface(renderer,image3);
 	door_texture = SDL_CreateTextureFromSurface(renderer,image2);
@@ -155,6 +156,7 @@ bool collideRect()
 	{
 		printf("player is touching door\n");
 		current_level = 1;
+		player.dst.x = 0;
 		return true;
 	}
 }
