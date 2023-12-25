@@ -129,10 +129,10 @@ void load_level(int current_level)
 					src.y = 0;
 					src.w = 200;
 					src.h = 200;
-					dst.x = i * tile_size;
-					dst.y = j * tile_size;
-					dst.w = tile_size;
-					dst.h = tile_size;
+					dst.x = i * stair_size;
+					dst.y = j * stair_size;
+					dst.w = stair_size;
+					dst.h = stair_size;
 					SDL_RenderCopy(renderer, level1_texture, &src, &dst);
 
 				}
