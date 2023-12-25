@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #define Width 700
 #define Height 700
 
@@ -25,17 +26,16 @@ struct level_0
 }door,wall,roof;
 
 struct floor{
-	int x;
-	int y;
-	int w;
-	int h;
-}grnd;
+	SDL_Rect src, dst;
+}ground;
 
 //surface and texture pointers
 SDL_Surface* image;
 SDL_Surface* image2;
 SDL_Surface* image3;
+SDL_Surface* image4;
 SDL_Texture* texture;
+SDL_Texture* level1_texture;
 SDL_Texture* door_texture;
 
 
@@ -48,6 +48,9 @@ void load_level(int current_level)
 	texture = SDL_CreateTextureFromSurface(renderer,image3);
 	door_texture = SDL_CreateTextureFromSurface(renderer,image2);
 
+	level1_texture = SDL_CreateTextureFromSurface(renderer,image4);
+
+
 
 	switch(current_level)
 	{
@@ -56,7 +59,7 @@ void load_level(int current_level)
 			{
 				for(int j = 0;j<map_height;j++)
 				{
-				if(level_0[i][j] == _grass_)
+				if(level_0[i][j] == _ground_)
 				{
 					SDL_Rect grass = {j * tile_size, i * tile_size, tile_size, tile_size};
 					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
@@ -105,14 +108,38 @@ void load_level(int current_level)
 			{
 				for(int j = 0;j<map_height;j++)
 				{
-				if(level_1[i][j] == block)
+				if(level_1[j][i] == _ground_)
 				{
-					SDL_Rect test_Block = {j * tile_size, i * tile_size, tile_size, tile_size};
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-					SDL_RenderFillRect(renderer, &test_Block);
+					ground.src.x = 100;
+					ground.src.y = 0;
+					ground.src.w = 100;
+					ground.src.h = 100;
+					ground.dst.x = i * tile_size;
+					ground.dst.y = j * tile_size;
+					ground.dst.w = tile_size;
+					ground.dst.h = tile_size;
+					SDL_RenderCopy(renderer, texture, &ground.src, &ground.dst);
+
+				}
+				if(level_1[j][i] == stairs)
+				{
+					SDL_Rect src, dst;
+
+					src.x = 0;
+					src.y = 0;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, level1_texture, &src, &dst);
+
 				}
 				}
 			}
+
+
 			break;
 		default:
 			printf("out of range level\n");
@@ -150,15 +177,15 @@ bool collideRect()
 {
 
 
-	bool collide = SDL_HasIntersection(&player.dst, &door.dst);
-
-	if(collide)
+	if(current_level < 1 && SDL_HasIntersection(&player.dst, &door.dst))
 	{
-		printf("player is touching door\n");
-		current_level = 1;
+		printf("Collision with target detected!\n");
+		printf("initializing next level\n");
+		current_level += 1;
 		player.dst.x = 0;
 		return true;
 	}
+
 }
 
 void gravity(){
@@ -176,6 +203,7 @@ void clear(){
 int main(int args, char** argv){
 	Window();		
 	//Create_Textures();
+	image4 = IMG_Load("assets/interior_sprites.png");	
 	image3 = IMG_Load("assets/house_texture.png");
 	image2 = IMG_Load("assets/door.png");
 	image = IMG_Load("assets/charRight_spritesheet.png");	
@@ -197,7 +225,6 @@ int main(int args, char** argv){
 		//clear frames
 		clear();
 		//clear print output
-		system("clear");
 		collideRect();
 		//gravity
 		gravity();
@@ -244,8 +271,8 @@ int main(int args, char** argv){
 	}
 	
 	//clean up
-	SDL_FreeSurface(image);SDL_FreeSurface(image2);SDL_FreeSurface(image3);
-	SDL_DestroyTexture(texture);SDL_DestroyTexture(door_texture);
+	SDL_FreeSurface(image);SDL_FreeSurface(image2);SDL_FreeSurface(image3);SDL_FreeSurface(image4);
+	SDL_DestroyTexture(texture);SDL_DestroyTexture(door_texture);SDL_DestroyTexture(level1_texture);
 
 	//end of game loop
 	SDL_DestroyRenderer(renderer);
