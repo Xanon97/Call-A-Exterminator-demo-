@@ -1,2 +1,2 @@
 main:
-	clear && gcc main.c -lSDL2 -lSDL2_image -o game
+	gcc main.c -lSDL2 -lSDL2_image -g -o game
