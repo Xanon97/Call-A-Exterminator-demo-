@@ -37,33 +37,42 @@ SDL_Surface* image4;
 SDL_Surface* image5;
 
 SDL_Texture* texture;
+SDL_Texture* player_tex;
 SDL_Texture* interior_textures;
 SDL_Texture* door_texture;
 SDL_Texture* background_tex;
 
 //collision box
 SDL_Rect collide_box = {500, 400, 200, 200};
+SDL_Rect collide_box2;
+SDL_Rect collide_box3;
 
+struct particle_struct
+{
+	int x, y;
+	int count;
+}particle;
 
+int spray_pixels(particle.count)
+{
+	int max = 5;
+	if(particle.count > max)
+	{
+		return 1;
+	}
+	
+	SDL_RenderDrawPoint(renderer, particle.x = Width / 2, particle.y = Height / 2);
+	SDL_SetRenderDrawColor(0,255,0,255);
 
+	return spray_pixels(particle.count + 1);
+}
 
 //level loader
 void load_level(int current_level)
 {
-
-	//walls & roof
-	texture = SDL_CreateTextureFromSurface(renderer,image3);
-	door_texture = SDL_CreateTextureFromSurface(renderer,image2);
-
-	interior_textures = SDL_CreateTextureFromSurface(renderer,image4);
-
-	//background photo
-	background_tex = SDL_CreateTextureFromSurface(renderer,image5);
-
 	switch(current_level)
 	{
-		case 0:	
-
+		case 0:
 			for(int i = 0;i<map_width;i++)
 			{
 				for(int j = 0;j<map_height;j++)
@@ -187,11 +196,21 @@ void load_level(int current_level)
 				}
 				if(level_2[j][i] == Door)
 				{
+
 					door.dst.x = i * tile_size; 
 					door.dst.y = j * tile_size; 
 					door.dst.w = 100;
 					door.dst.h = 200;
 					SDL_RenderCopy(renderer, door_texture, NULL, &door.dst);
+
+					collide_box2.x = door.dst.x;
+					collide_box2.y = door.dst.y;
+					collide_box2.w = door.dst.w;
+					collide_box2.h = door.dst.h;
+
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					SDL_RenderDrawRect(renderer, &collide_box2);
+
 
 				}
 				if(level_2[j][i] == glass_window)
@@ -222,9 +241,178 @@ void load_level(int current_level)
 				}
 				}
 			}
-
 			SDL_SetRenderDrawColor(renderer, 0, 255, 180, 255);
 			break;
+		case 3:	
+			for(int i = 0;i<map_width;i++)
+			{
+				for(int j = 0;j<map_height;j++)
+				{
+					if(level_3[j][i] == '#')
+					{
+					ground.src.x = 0;
+					ground.src.y = 0;
+					ground.src.w = tile_size;
+					ground.src.h = tile_size;
+					ground.dst.x = i * tile_size;
+					ground.dst.y = j * tile_size;
+					ground.dst.w = tile_size;
+					ground.dst.h = tile_size;
+					SDL_RenderCopy(renderer, texture, &ground.src, &ground.dst);
+					} 
+					
+					if(level_3[j][i] == 's')
+					{
+
+					SDL_Rect src, dst;
+
+					src.x = 0;
+					src.y = 0;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size + -100;
+					dst.y = j * tile_size + -100;
+					dst.w = tile_size * 2;
+					dst.h = tile_size * 2;
+					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
+					}
+					
+					if(level_3[j][i] == 'c')
+					{
+
+					SDL_Rect src, dst;
+
+					src.x = 0;
+					src.y = 200;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
+					}
+					
+					if(level_3[j][i] == 'v')
+					{
+
+					SDL_Rect src, dst;
+
+					src.x = 200;
+					src.y = 0;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
+					}
+					
+					if(level_3[j][i] == '.')
+					{
+
+					SDL_Rect src, dst;
+
+					src.x = 600;
+					src.y = 0;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
+					}
+					
+					if(level_3[j][i] == 't')
+					{
+
+					SDL_Rect src, dst;
+
+					src.x = 400;
+					src.y = 0;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size + 21;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
+					}
+					
+					if(level_3[j][i] == 'd')
+					{
+					door.dst.x = i * tile_size; 
+					door.dst.y = j * tile_size; 
+					door.dst.w = 100;
+					door.dst.h = 200;
+					SDL_RenderCopy(renderer, door_texture, NULL, &door.dst);
+					
+					collide_box3.x = door.dst.x;
+					collide_box3.y = door.dst.y;
+					collide_box3.w = door.dst.w;
+					collide_box3.h = door.dst.h;
+
+					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+					SDL_RenderDrawRect(renderer, &collide_box3);
+					}
+					
+					if(level_3[j][i] == painting)
+					{
+
+					SDL_Rect src, dst;
+
+					src.x = 400;
+					src.y = 200;
+					src.w = 200;
+					src.h = 200;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
+					}
+				}
+			}
+			SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);
+			break;
+		case 4:
+			for(int i = 0;i<map_width;i++)
+			{
+				for(int j = 0;j<map_height;j++)
+				{
+					if(level_4[j][i] == '#')
+					{
+					ground.src.x = 0;
+					ground.src.y = 0;
+					ground.src.w = tile_size;
+					ground.src.h = tile_size;
+					ground.dst.x = i * tile_size;
+					ground.dst.y = j * tile_size;
+					ground.dst.w = tile_size;
+					ground.dst.h = tile_size;
+					SDL_RenderCopy(renderer, texture, &ground.src, &ground.dst);
+					} 
+					
+					if(level_4[j][i] == ' ')
+					{
+					SDL_Rect src, dst;
+
+					src.x = 200;
+					src.y = 0;
+					src.w = tile_size;
+					src.h = tile_size;
+					dst.x = i * tile_size;
+					dst.y = j * tile_size;
+					dst.w = tile_size;
+					dst.h = tile_size;
+					SDL_RenderCopy(renderer, texture, &src, &dst);
+					}	
+				}
+			}
+			break;
+
 		default:
 			printf("out of range level\n");
 	}
@@ -233,7 +421,6 @@ void load_level(int current_level)
 //create player tiles
 void draw_player(){
 	//character tiles
-	texture = SDL_CreateTextureFromSurface(renderer,image);
 	player.src.x;
 	player.src.y;
 	player.src.w = 100;
@@ -245,13 +432,12 @@ void draw_player(){
 	player.dst.h = 100;
 	
 	//copy textures of player sprite to rectangle
-	SDL_RenderCopy(renderer, texture, &player.src, &player.dst);	
-	//find a way to seperate rendering and updating player position/size in the future
+	SDL_RenderCopy(renderer, player_tex, &player.src, &player.dst);
 }
 
 //create a window
 void Window(){
-	window = SDL_CreateWindow("Call A Exterminator",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,Width,Height,0);
+	window = SDL_CreateWindow("Call A Exterminator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,Width,Height,0);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 }
 
@@ -261,7 +447,7 @@ bool collideRect()
 	if(current_level < 1 && SDL_HasIntersection(&player.dst, &door.dst))
 	{
 		printf("Collision with target detected!\n");
-		printf("initializing next level\n");
+		printf("initializing level %d\n",current_level+1);
 		current_level += 1;
 		player.dst.x = 0;
 		return true;
@@ -269,9 +455,24 @@ bool collideRect()
 	if(current_level < 2 && SDL_HasIntersection(&player.dst, &collide_box))
 	{
 		printf("Collision with target detected!\n");
-		printf("initializing next level\n");
+		printf("initializing next level %d\n",current_level+1);
 		current_level += 1;
 		player.dst.x = 0;
+		return true;
+	}
+	if(current_level < 3 && SDL_HasIntersection(&player.dst, &collide_box2))
+	{
+		printf("Collision with target detected!\n");
+		printf("initializing next level %d \n",current_level+1);
+		current_level += 1;
+		player.src.y = 100;
+		return true;
+	}
+	if(current_level < 4 && SDL_HasIntersection(&player.dst, &collide_box3))
+	{
+		printf("Collision with target detected!\n");
+		printf("initializing final level, level %d\n",current_level+1);
+		current_level += 1;
 		return true;
 	}
 
@@ -289,25 +490,37 @@ void clear(){
 }
 
 int main(int args, char** argv){
+	//initialize SDL2 and SDL_image
+        SDL_Init(SDL_INIT_VIDEO);
+        if(SDL_Init(SDL_INIT_VIDEO)<0){
+                printf("SDL failed to initialize\n",SDL_GetError());
+                exit(-1);
+        }
+        IMG_Init(IMG_INIT_PNG & IMG_INIT_JPG);
+        if(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)<0){                                                  
+		printf("SDL_image failed to initialize\n",SDL_GetError());
+                exit(-1);
+        }
+
 	Window();		
-	//Create_Textures();
+
 	image5 = IMG_Load("assets/background2.jpg");
 	image4 = IMG_Load("assets/interior_sprites.png");	
 	image3 = IMG_Load("assets/house_texture.png");
 	image2 = IMG_Load("assets/door.png");
-	image = IMG_Load("assets/charRight_spritesheet.png");	
+	image = IMG_Load("assets/charRight_spritesheet.png");
 
-	//initialize SDL2 and SDL_image
-	SDL_Init(SDL_INIT_VIDEO);
-	if(SDL_Init(SDL_INIT_VIDEO)<0){
-		printf("SDL failed to initialize\n",SDL_GetError());
-		exit(1);
-	}
-	IMG_Init(IMG_INIT_PNG && IMG_INIT_JPG);
-	if(IMG_Init(IMG_INIT_PNG)<0){
-		printf("SDL_image failed to initialize\n",SDL_GetError());
-		exit(1);
-	}
+	//player texture creation
+	player_tex = SDL_CreateTextureFromSurface(renderer,image);
+
+
+	//house textures                                   
+	texture = SDL_CreateTextureFromSurface(renderer,image3);              
+	door_texture = SDL_CreateTextureFromSurface(renderer,image2);
+	interior_textures = SDL_CreateTextureFromSurface(renderer,image4);
+
+        //2nd background photo texture
+        background_tex = SDL_CreateTextureFromSurface(renderer,image5);
 
 	bool quit = false;
 	while(!quit){
@@ -323,8 +536,7 @@ int main(int args, char** argv){
 		//shows image on screen
 		SDL_RenderPresent(renderer);
 		while(SDL_PollEvent(&event)!=0){
-		//printf("x = %d y = %d rx = %d ry = %d\n",player.x,player.y,rx,ry);
-
+			
 			//controls
 			if(event.type == SDL_KEYDOWN){
 				switch(event.key.keysym.sym)
@@ -362,7 +574,7 @@ int main(int args, char** argv){
 	//clean up
 	SDL_FreeSurface(image);SDL_FreeSurface(image2);SDL_FreeSurface(image3);SDL_FreeSurface(image4);SDL_FreeSurface(image5);
 
-	SDL_DestroyTexture(texture);SDL_DestroyTexture(door_texture);SDL_DestroyTexture(interior_textures);SDL_DestroyTexture(background_tex);
+	SDL_DestroyTexture(player_tex);SDL_DestroyTexture(texture);SDL_DestroyTexture(door_texture);SDL_DestroyTexture(interior_textures);SDL_DestroyTexture(background_tex);
 
 	//end of game loop
 	SDL_DestroyRenderer(renderer);
