@@ -52,10 +52,24 @@ struct particle_struct
 	int x, y;
 }particle;
 
-int spray_pixels()
+bool falling = false;
+
+int spray_pixels(int count)
 {
-	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	SDL_RenderDrawPoint(renderer, particle.x = Width / 2, ++particle.y);
+	if(count > 50)
+	{
+		return 1;
+	}
+	if(particle.y < Height && falling==true)
+	{
+		particle.y += 1;
+		SDL_RenderDrawPoint(renderer, particle.x = Width / 2, particle.y);
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	} else {
+		particle.y = 0;
+	}
+
+	return spray_pixels(count + 1);
 }
 
 //level loader
@@ -98,6 +112,7 @@ void load_level(int current_level)
 					roof.dst.h = tile_size;
 					SDL_RenderCopy(renderer, texture, &roof.src, &roof.dst);
 				}
+	
 				}
 			}
 			//door	
@@ -110,7 +125,7 @@ void load_level(int current_level)
 			door.dst.w = 100;
 			door.dst.h = 200;
 			//copy textures to door rect
-			SDL_RenderCopy(renderer, door_texture, &door.src, &door.dst);
+			SDL_RenderCopy(renderer, door_texture, &door.src, &door.dst);	
 			SDL_SetRenderDrawColor(renderer, 127, 0, 255, 255);
 			break;
 		case 1:
@@ -477,6 +492,7 @@ void gravity(){
 }
 
 void clear(){
+
 	SDL_RenderClear(renderer);
 }
 
@@ -521,6 +537,8 @@ int main(int args, char** argv){
 		collideRect();
 		//gravity
 		gravity();
+		//draw particles
+		spray_pixels(0);
 		//draws player and world sprites
 		load_level(current_level);
 		draw_player();
@@ -542,9 +560,10 @@ int main(int args, char** argv){
 					player.dst.x += 10;
 					player.src.x += 100;
 					break;
-				case SDLK_w:
-					spray_pixels();
+				case SDLK_SPACE:
+					falling = true;
 					break;
+
 				}
 			}	
 			
