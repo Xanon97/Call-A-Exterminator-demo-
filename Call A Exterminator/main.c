@@ -50,21 +50,12 @@ SDL_Rect collide_box3;
 struct particle_struct
 {
 	int x, y;
-	int count;
 }particle;
 
-int spray_pixels(particle.count)
+int spray_pixels()
 {
-	int max = 5;
-	if(particle.count > max)
-	{
-		return 1;
-	}
-	
-	SDL_RenderDrawPoint(renderer, particle.x = Width / 2, particle.y = Height / 2);
-	SDL_SetRenderDrawColor(0,255,0,255);
-
-	return spray_pixels(particle.count + 1);
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	SDL_RenderDrawPoint(renderer, particle.x = Width / 2, ++particle.y);
 }
 
 //level loader
@@ -550,6 +541,9 @@ int main(int args, char** argv){
 					player.src.y = 0;
 					player.dst.x += 10;
 					player.src.x += 100;
+					break;
+				case SDLK_w:
+					spray_pixels();
 					break;
 				}
 			}	
