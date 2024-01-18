@@ -50,41 +50,36 @@ SDL_Rect collide_box3;
 struct particle_struct
 {
 	int x, y;
-}particle[2];
+	int spread;
+}particle[3];
 
-bool spray = false, active = false;
+bool spray = false;
 
 int spray_pixels(int count)
-{
-	const int xv = 2;
-	const int yv = 2;
+{	
+	const int xv = 1;
+	const int yv = 1;
 	if(count > 2)
 	{
 		return 1;
-	}
+	}	
 		
 	if(spray == true)
-	{	
-		particle[0].x += xv;
-		particle[1].x = Width / 2;	
-		particle[2].x -= xv;
-		particle[count].y += yv;	
-	}
-	else
 	{
-		spray = false;
-		particle[count].y = 0;
-	}
-	if(particle[count].y < Height)
-	{
-		active = true;
-	}
-	if(active == true)
-	{	
+		particle[count].x = count + Width / 2;
+
+		particle[0].x += particle[count].spread / 2;	
+		particle[2].x -= particle[count].spread / 2;
+		
+		particle[count].spread += xv;
+		particle[count].y += yv;
+		
 		SDL_RenderDrawPoint(renderer, particle[count].x, particle[count].y);
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	}
-
+	
+	
+	}	
+	
 	return spray_pixels(count + 1);
 }
 
