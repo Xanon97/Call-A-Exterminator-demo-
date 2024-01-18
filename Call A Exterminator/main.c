@@ -50,23 +50,39 @@ SDL_Rect collide_box3;
 struct particle_struct
 {
 	int x, y;
-}particle;
+}particle[2];
 
-bool falling = false;
+bool spray = false, active = false;
 
 int spray_pixels(int count)
 {
-	if(count > 50)
+	const int xv = 2;
+	const int yv = 2;
+	if(count > 2)
 	{
 		return 1;
 	}
-	if(particle.y < Height && falling==true)
+		
+	if(spray == true)
+	{	
+		particle[0].x += xv;
+		particle[1].x = Width / 2;	
+		particle[2].x -= xv;
+		particle[count].y += yv;	
+	}
+	else
 	{
-		particle.y += 1;
-		SDL_RenderDrawPoint(renderer, particle.x = Width / 2, particle.y);
+		spray = false;
+		particle[count].y = 0;
+	}
+	if(particle[count].y < Height)
+	{
+		active = true;
+	}
+	if(active == true)
+	{	
+		SDL_RenderDrawPoint(renderer, particle[count].x, particle[count].y);
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-	} else {
-		particle.y = 0;
 	}
 
 	return spray_pixels(count + 1);
@@ -78,6 +94,8 @@ void load_level(int current_level)
 	switch(current_level)
 	{
 		case 0:
+			SDL_SetRenderDrawColor(renderer, 127, 0, 255, 255);
+			SDL_RenderClear(renderer);
 			for(int i = 0;i<map_width;i++)
 			{
 				for(int j = 0;j<map_height;j++)
@@ -124,13 +142,12 @@ void load_level(int current_level)
 			door.dst.y = 400; 
 			door.dst.w = 100;
 			door.dst.h = 200;
+
 			//copy textures to door rect
 			SDL_RenderCopy(renderer, door_texture, &door.src, &door.dst);	
-			SDL_SetRenderDrawColor(renderer, 127, 0, 255, 255);
 			break;
-		case 1:
+		case 1:	
 			SDL_RenderCopy(renderer, background_tex, NULL, NULL);
-
 			for(int i = 0;i<map_width;i++)
 			{
 				for(int j = 0;j<map_height;j++)
@@ -184,6 +201,8 @@ void load_level(int current_level)
 			SDL_RenderDrawRect(renderer, &collide_box);
 			break;
 		case 2:
+			SDL_SetRenderDrawColor(renderer, 0, 255, 180, 255);
+			SDL_RenderClear(renderer);
 			for(int i = 0;i<map_width;i++)
 			{
 				for(int j = 0;j<map_height;j++)
@@ -246,10 +265,11 @@ void load_level(int current_level)
 					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
 				}
 				}
-			}
-			SDL_SetRenderDrawColor(renderer, 0, 255, 180, 255);
+			}	
 			break;
 		case 3:	
+			SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);
+			SDL_RenderClear(renderer);
 			for(int i = 0;i<map_width;i++)
 			{
 				for(int j = 0;j<map_height;j++)
@@ -380,8 +400,7 @@ void load_level(int current_level)
 					SDL_RenderCopy(renderer, interior_textures, &src, &dst);
 					}
 				}
-			}
-			SDL_SetRenderDrawColor(renderer, 245, 245, 220, 255);
+			}	
 			break;
 		case 4:
 			for(int i = 0;i<map_width;i++)
@@ -492,7 +511,6 @@ void gravity(){
 }
 
 void clear(){
-
 	SDL_RenderClear(renderer);
 }
 
@@ -516,18 +534,17 @@ int main(int args, char** argv){
 	image3 = IMG_Load("assets/house_texture.png");
 	image2 = IMG_Load("assets/door.png");
 	image = IMG_Load("assets/charRight_spritesheet.png");
-
-	//player texture creation
-	player_tex = SDL_CreateTextureFromSurface(renderer,image);
-
-
+	
 	//house textures                                   
 	texture = SDL_CreateTextureFromSurface(renderer,image3);              
 	door_texture = SDL_CreateTextureFromSurface(renderer,image2);
 	interior_textures = SDL_CreateTextureFromSurface(renderer,image4);
-
-        //2nd background photo texture
+	
+	//2nd background photo texture
         background_tex = SDL_CreateTextureFromSurface(renderer,image5);
+	
+	//player texture creation
+	player_tex = SDL_CreateTextureFromSurface(renderer,image);
 
 	bool quit = false;
 	while(!quit){
@@ -536,12 +553,12 @@ int main(int args, char** argv){
 		//clear print output
 		collideRect();
 		//gravity
-		gravity();
-		//draw particles
-		spray_pixels(0);
+		gravity();	
 		//draws player and world sprites
 		load_level(current_level);
 		draw_player();
+		//draw particles
+		spray_pixels(0);
 		//shows image on screen
 		SDL_RenderPresent(renderer);
 		while(SDL_PollEvent(&event)!=0){
@@ -561,7 +578,7 @@ int main(int args, char** argv){
 					player.src.x += 100;
 					break;
 				case SDLK_SPACE:
-					falling = true;
+					spray = true;
 					break;
 
 				}
