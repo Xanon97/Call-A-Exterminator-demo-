@@ -47,40 +47,60 @@ SDL_Rect collide_box = {500, 400, 200, 200};
 SDL_Rect collide_box2;
 SDL_Rect collide_box3;
 
-struct particle_struct
-{
-	int x, y;
-	int spread;
-}particle[3];
+SDL_Point particle[3];
+
+int distanceX, distanceY;
 
 bool spray = false;
 
-int spray_pixels(int count)
-{	
+int active = 0;
+
+void spray_pixels()
+{
+	
+	int count;
+
+	const int max = 3;
 	const int xv = 1;
 	const int yv = 1;
-	if(count > 2)
-	{
-		return 1;
-	}	
-		
-	if(spray == true)
-	{
-		particle[count].x = count + Width / 2;
 
-		particle[0].x += particle[count].spread / 2;	
-		particle[2].x -= particle[count].spread / 2;
-		
-		particle[count].spread += xv;
-		particle[count].y += yv;
-		
-		SDL_RenderDrawPoint(renderer, particle[count].x, particle[count].y);
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	int x, y;
+
+	x = Width / 2;
 	
-	
-	}	
-	
-	return spray_pixels(count + 1);
+	if(spray)
+	{
+		active = 1;
+		for(count = 0;count < max;count++)
+		{
+			particle[count].x = x;
+
+			particle[0].x += distanceX / 2;
+			particle[2].x -= distanceX / 2;
+			particle[count].y += yv;
+			distanceX += xv;
+			
+		}
+	}
+}
+
+void draw_particles()
+{
+	int count;
+	const int max = 3;
+
+	if(active > 0)
+	{
+		for(count = 0; count < max;count++)
+		{
+			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+			SDL_RenderDrawPoint(renderer, particle[count].x, particle[count].y);
+		}
+	}
+	else
+	{
+		active = 0;
+	}
 }
 
 //level loader
@@ -553,7 +573,8 @@ int main(int args, char** argv){
 		load_level(current_level);
 		draw_player();
 		//draw particles
-		spray_pixels(0);
+		spray_pixels();
+		draw_particles();
 		//shows image on screen
 		SDL_RenderPresent(renderer);
 		while(SDL_PollEvent(&event)!=0){
@@ -577,7 +598,7 @@ int main(int args, char** argv){
 					break;
 
 				}
-			}	
+			}
 			
 			//corrects position of destination square coordinates
 			if(player.src.x > 100)
