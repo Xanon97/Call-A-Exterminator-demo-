@@ -47,13 +47,16 @@ SDL_Rect collide_box = {500, 400, 200, 200};
 SDL_Rect collide_box2;
 SDL_Rect collide_box3;
 
-SDL_Point particle[3];
+#define particle_total 3
 
-int distanceX, distanceY;
+struct Particles
+{
+	int x, y;
+	int active;
+
+}particles[particle_total], distance;
 
 bool spray = false;
-
-int active = 0;
 
 void spray_pixels()
 {
@@ -64,43 +67,58 @@ void spray_pixels()
 	const int xv = 1;
 	const int yv = 1;
 
-	int x, y;
-
-	x = Width / 2;
+	for(count = 0;count < particle_total;count++)
+	{
+		particles[count].active = 0;
+	}
 	
 	if(spray)
 	{
-		active = 1;
 		for(count = 0;count < max;count++)
 		{
-			particle[count].x = x;
+			if(particles[count].active == 0)
+			{
 
-			particle[0].x += distanceX / 2;
-			particle[2].x -= distanceX / 2;
-			particle[count].y += yv;
-			distanceX += xv;
-			
+				particles[count].active = 1;
+
+			}
 		}
-	}
-}
-
-void draw_particles()
-{
-	int count;
-	const int max = 3;
-
-	if(active > 0)
-	{
-		for(count = 0; count < max;count++)
+		for(count = 0;count < max;count++)
 		{
-			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-			SDL_RenderDrawPoint(renderer, particle[count].x, particle[count].y);
+
+			if(particles[count].active == 1)
+			{
+				//Makes right and left partiles scatter
+				//Distance.x is divided to control length of scatter
+				particles[0].x -= distance.x / 8;
+				particles[2].x += distance.x / 8;
+
+				particles[count].y += particle_total * distance.y / 2;
+
+				distance.x += xv;
+				distance.y += yv;	
+			}
+		}	
+		for(count = 0;count < particle_total;count++)
+		{
+			if(particles[count].y > Height)
+			{	
+				particles[count].x = Width / 2;
+				particles[count].y = 0;
+				distance.x = 0;
+				distance.y = 0;
+				particles[count].active = 0;
+			}
+			if(particles[count].active == 1)
+			{
+				SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+				SDL_RenderDrawPoint(renderer, particles[count].x, particles[count].y);
+			}	
 		}
+		
+
 	}
-	else
-	{
-		active = 0;
-	}
+	
 }
 
 //level loader
@@ -574,7 +592,6 @@ int main(int args, char** argv){
 		draw_player();
 		//draw particles
 		spray_pixels();
-		draw_particles();
 		//shows image on screen
 		SDL_RenderPresent(renderer);
 		while(SDL_PollEvent(&event)!=0){
@@ -596,7 +613,14 @@ int main(int args, char** argv){
 				case SDLK_SPACE:
 					spray = true;
 					break;
-
+				}
+			}
+			if(event.type == SDL_KEYUP){
+				switch(event.key.keysym.sym)
+				{
+				case SDLK_SPACE:
+					spray = false;
+					break;
 				}
 			}
 			
