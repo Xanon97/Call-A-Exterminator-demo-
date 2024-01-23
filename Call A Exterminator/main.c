@@ -47,7 +47,7 @@ SDL_Rect collide_box = {500, 400, 200, 200};
 SDL_Rect collide_box2;
 SDL_Rect collide_box3;
 
-#define particle_total 3
+#define particle_total 100
 
 struct Particles
 {
@@ -63,7 +63,7 @@ void spray_pixels()
 	
 	int count;
 
-	const int max = 3;
+	const int max = 32;
 	const int xv = 1;
 	const int yv = 1;
 
@@ -77,47 +77,42 @@ void spray_pixels()
 		for(count = 0;count < max;count++)
 		{
 			if(particles[count].active == 0)
-			{
-
+			{	
 				particles[count].active = 1;
-
 			}
-		}
-		for(count = 0;count < max;count++)
-		{
-
 			if(particles[count].active == 1)
 			{
-				//Makes right and left partiles scatter
+				//Makes right and left particles scatter
 				//Distance.x is divided to control length of scatter
-				particles[0].x -= distance.x / 8;
-				particles[2].x += distance.x / 8;
+				int factor = count - (max - 1) / 2;
+				particles[count].x = Width / 2 + factor * distance.x / 8;
 
-				particles[count].y += particle_total * distance.y / 2;
+				particles[count].y += distance.y;
 
 				distance.x += xv;
-				distance.y += yv;	
+				distance.y += yv;
+					
 			}
 		}	
+		
 		for(count = 0;count < particle_total;count++)
 		{
 			if(particles[count].y > Height)
-			{	
-				particles[count].x = Width / 2;
+			{
 				particles[count].y = 0;
 				distance.x = 0;
 				distance.y = 0;
 				particles[count].active = 0;
 			}
 			if(particles[count].active == 1)
-			{
+			{	
 				SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 				SDL_RenderDrawPoint(renderer, particles[count].x, particles[count].y);
 			}	
 		}
-		
-
 	}
+	
+	
 	
 }
 
