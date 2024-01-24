@@ -47,73 +47,78 @@ SDL_Rect collide_box = {500, 400, 200, 200};
 SDL_Rect collide_box2;
 SDL_Rect collide_box3;
 
-#define particle_total 100
+#define max_particles 500
 
 struct Particles
 {
 	int x, y;
 	int active;
 
-}particles[particle_total], distance;
+}particles[max_particles], distance;
 
-bool spray = false;
+bool spray;
 
 void spray_pixels()
 {
-	
-	int count;
-
-	const int max = 32;
-	const int xv = 1;
-	const int yv = 1;
-
-	for(count = 0;count < particle_total;count++)
-	{
-		particles[count].active = 0;
-	}
-	
+	int count;		
 	if(spray)
-	{
-		for(count = 0;count < max;count++)
+	{	
+		for(count = 0;count < max_particles;count++)
+		{
+			particles[count].active = 0;
+		}
+		for(count = 0;count < max_particles;count++)
 		{
 			if(particles[count].active == 0)
 			{	
 				particles[count].active = 1;
-			}
-			if(particles[count].active == 1)
-			{
-				//Makes right and left particles scatter
-				//Distance.x is divided to control length of scatter
-				int factor = count - (max - 1) / 2;
-				particles[count].x = Width / 2 + factor * distance.x / 8;
-
-				particles[count].y += distance.y;
-
-				distance.x += xv;
-				distance.y += yv;
-					
-			}
-		}	
-		
-		for(count = 0;count < particle_total;count++)
-		{
-			if(particles[count].y > Height)
-			{
-				particles[count].y = 0;
-				distance.x = 0;
-				distance.y = 0;
-				particles[count].active = 0;
-			}
-			if(particles[count].active == 1)
-			{	
-				SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-				SDL_RenderDrawPoint(renderer, particles[count].x, particles[count].y);
 			}	
 		}
 	}
-	
-	
-	
+}
+
+void update_spray()
+{
+	const int xv = 1;
+	const int yv = 1;
+	int count;
+
+	for(count = 0;count < max_particles;count++)
+	{
+		if(particles[count].active == 1)
+		{
+			//Makes right and left particles scatter
+			//Distance.x is divided to control length of scatter
+			int factor = count - (max_particles - 1) / 2;
+			particles[count].x = Width / 2 + factor * distance.x / 200;	
+
+			particles[count].y += distance.y;
+
+			distance.x += xv;
+			distance.y += yv;
+		}
+		if(particles[count].y > Height)
+		{
+			particles[count].x = Width / 2;
+			particles[count].y = 0;
+			distance.x = 0;
+			distance.y = 0;
+			particles[count].active = 0;
+		}
+	}
+}
+
+void render_spray()
+{
+	int count;
+	for(count = 0;count < max_particles;count++)
+	{
+		if(particles[count].active == 1)
+		{	
+			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+			SDL_RenderDrawPoint(renderer, particles[count].x, particles[count].y);	
+		}
+	}
 }
 
 //level loader
@@ -587,6 +592,8 @@ int main(int args, char** argv){
 		draw_player();
 		//draw particles
 		spray_pixels();
+		update_spray();
+		render_spray();
 		//shows image on screen
 		SDL_RenderPresent(renderer);
 		while(SDL_PollEvent(&event)!=0){
