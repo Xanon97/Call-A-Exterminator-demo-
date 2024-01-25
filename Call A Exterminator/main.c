@@ -47,7 +47,7 @@ SDL_Rect collide_box = {500, 400, 200, 200};
 SDL_Rect collide_box2;
 SDL_Rect collide_box3;
 
-#define max_particles 100
+#define max_particles 500
 
 struct Particles
 {
@@ -92,9 +92,9 @@ void update_spray()
 			double factor = count - (max_particles - 1.0) / 2;
 			//Makes right and left particles scatter
 			//Distance.x is divided to control length of scatter
-			particles[count].x = Width / 2 + factor * distance.x / 50;	
+			particles[count].x = Width / 2 + factor * distance.x / (max_particles / 2);	
 
-			particles[count].y += distance.x;
+			particles[count].y += distance.y;
 
 			distance.x += xv;
 			distance.y += yv;
