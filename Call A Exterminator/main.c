@@ -64,6 +64,7 @@ bool spray;
 //emit and initialize particles
 void spray_pixels()
 {
+	
 	int count;
 	if(spray)
 	{	
@@ -71,11 +72,9 @@ void spray_pixels()
 		{
 			if(particles[count].active == 0)
 			{	
-				if(player.face_R)
+				if(!player.face_L)
 					particles[count].x = player.dst.x + ((player.dst.w / 2.1) * 2.0);
-				if(player.face_L)
-					particles[count].x = player.dst.x + (player.dst.w / 32.0) * 2.0;
-
+				
 				particles[count].y = player.dst.y + (player.dst.h / 2);
 				distance.x = 0;
 				distance.y = 0;
@@ -98,30 +97,23 @@ void update_spray()
 				
 		if(particles[count].active == 1)
 		{
-			double factor = count - (max_particles - 1.0) / 2.0;
-			//Makes right and left particles scatter
-			//Distance.x is divided to control length of scatter
-			particles[count].y = (player.dst.y + (player.dst.h / 2)) + factor * distance.y / (max_particles / 2);	
-
+			double factor = count - (max_particles - 1.0) / 2.0; //Makes top and bottom particles scatter by index number
+			//Distance.y is divided to control length of scatter
 			if(player.face_R)
 				particles[count].x += distance.x;
 			if(player.face_L)
 				particles[count].x -= distance.x;
-			
+
+			particles[count].y = (player.dst.y + (player.dst.h / 2)) + factor * distance.y / (max_particles / 2);	
+
 			distance.x += xv;
 			distance.y += yv;
 		}
 		if(particles[count].x > Width || particles[count].x < 0)
 		{
-			if(player.face_R)
-				particles[count].x = player.dst.x + ((player.dst.w / 2.1) * 2.0);
-			if(player.face_L)
-				particles[count].x = player.dst.x + ((player.dst.w / 32.0) * 2.0);
+			particles[count].x = player.dst.x + player.dst.w;
 
-
-			
-			particles[count].y = player.dst.y + (player.dst.h / 2);
-
+			particles[count].y = player.dst.y + player.dst.h;
 
 			distance.x = 0;
 			distance.y = 0;
@@ -617,7 +609,7 @@ int main(int args, char** argv){
 		spray_pixels();
 		update_spray();
 		render_spray();
-		//shows image on screen
+	//shows image on screen
 		SDL_RenderPresent(renderer);
 		while(SDL_PollEvent(&event)!=0){
 			
@@ -628,13 +620,15 @@ int main(int args, char** argv){
 				case SDLK_a: 
 					player.face_L = true;
 					player.face_R = false;
+					
 					player.src.y = 100;
 					player.dst.x -= 10;
 					player.src.x -= 100;	
 					break;
 				case SDLK_d:
-					player.face_R = true;
 					player.face_L = false;
+					player.face_R = true;;
+					
 					player.src.y = 0;
 					player.dst.x += 10;
 					player.src.x += 100;
