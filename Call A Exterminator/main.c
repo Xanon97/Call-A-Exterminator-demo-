@@ -15,7 +15,8 @@ SDL_Event event;
 //player variable struct
 struct Player
 {
-	bool face_L, face_R; //direction player is facing
+	int dir; //direction player is facing.
+		 //0 is left. 1 is right
 	SDL_Rect src, dst;
 }player;
 
@@ -53,9 +54,10 @@ SDL_Rect collide_box3;
 struct Particles
 {
 	float x, y;
+	int xv, yv;
 	int active;
 
-}particle, distance;
+}particle;
 
 struct Particles particles[max_particles] = {0};
 
@@ -66,18 +68,19 @@ void spray_pixels()
 {
 	
 	int count;
+
 	if(spray)
 	{	
-		for(count = 0;count < max_particles;count++)
+		for(count = 0;count < 1;count++)
 		{
 			if(particles[count].active == 0)
 			{	
-				if(!player.face_L)
-					particles[count].x = player.dst.x + ((player.dst.w / 2.1) * 2.0);
-				
-				particles[count].y = player.dst.y + (player.dst.h / 2);
-				distance.x = 0;
-				distance.y = 0;
+				particles[count].x = (Width / 2);
+				particles[count].y = (Height / 2);
+
+				particle.xv = 0;
+				particle.yv = 0;
+
 				particles[count].active = 1;
 			}
 		}
@@ -87,8 +90,6 @@ void spray_pixels()
 //update particle position + velociity & check if active or inactive
 void update_spray()
 {
-	const int xv = 1;
-	const int yv = 1;
 	int count;
 
 
@@ -97,29 +98,27 @@ void update_spray()
 				
 		if(particles[count].active == 1)
 		{
+			particle.xv = 1;
 			double factor = count - (max_particles - 1.0) / 2.0; //Makes top and bottom particles scatter by index number
-			//Distance.y is divided to control length of scatter
-			if(player.face_R)
-				particles[count].x += distance.x;
-			if(player.face_L)
-				particles[count].x -= distance.x;
-
-			particles[count].y = (player.dst.y + (player.dst.h / 2)) + factor * distance.y / (max_particles / 2);	
-
-			distance.x += xv;
-			distance.y += yv;
+									     //Distance.y is divided to control length of scatter
+			//spread += particle.yv;
+			if(player.dir == 1)
+				particles[count].x += particle.xv;
+			else
+				particles[count].x -= particle.xv;
 		}
 		if(particles[count].x > Width || particles[count].x < 0)
 		{
-			particles[count].x = player.dst.x + player.dst.w;
+			particles[count].x = Width / 2;
+			particles[count].y = Height / 2;
 
-			particles[count].y = player.dst.y + player.dst.h;
+			particle.xv = 0;
+			particle.yv = 0;
 
-			distance.x = 0;
-			distance.y = 0;
 			particles[count].active = 0;
 		}
-	}
+
+	}	
 }
 
 //render particles if they're active
@@ -618,16 +617,14 @@ int main(int args, char** argv){
 				switch(event.key.keysym.sym)
 				{
 				case SDLK_a: 
-					player.face_L = true;
-					player.face_R = false;
+					player.dir = 0;
 					
 					player.src.y = 100;
 					player.dst.x -= 10;
 					player.src.x -= 100;	
 					break;
 				case SDLK_d:
-					player.face_L = false;
-					player.face_R = true;;
+					player.dir = 1;
 					
 					player.src.y = 0;
 					player.dst.x += 10;
