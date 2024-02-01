@@ -77,8 +77,12 @@ void spray_pixels()
 			{	
 				particles[count].x = (Width / 2);
 				particles[count].y = (Height / 2);
+				
+				if(player.dir == 1)
+					particles[count].xv = 1;
+				else
+					particles[count].xv = -1;
 
-				particle.xv = 0;
 				particle.yv = 0;
 
 				particles[count].active = 1;
@@ -98,22 +102,17 @@ void update_spray()
 				
 		if(particles[count].active == 1)
 		{
-			particle.xv = 1;
 			double factor = count - (max_particles - 1.0) / 2.0; //Makes top and bottom particles scatter by index number
 									     //Distance.y is divided to control length of scatter
-			//spread += particle.yv;
-			if(player.dir == 1)
-				particles[count].x += particle.xv;
-			else
-				particles[count].x -= particle.xv;
+			particles[count].x += particles[count].xv;
 		}
 		if(particles[count].x > Width || particles[count].x < 0)
 		{
 			particles[count].x = Width / 2;
 			particles[count].y = Height / 2;
 
-			particle.xv = 0;
-			particle.yv = 0;
+			particles[count].xv = 0;
+			particles[count].yv = 0;
 
 			particles[count].active = 0;
 		}
