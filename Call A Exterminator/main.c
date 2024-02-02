@@ -18,7 +18,7 @@ struct Player
 	int dir; //direction player is facing.
 		 //0 is left. 1 is right
 	SDL_Rect src, dst;
-}player;
+}player = {1};
 
 //level_0 object variable struct
 struct level_0
@@ -57,7 +57,7 @@ struct Particles
 	int xv, yv;
 	int active;
 
-}particle;
+};
 
 struct Particles particles[max_particles] = {0};
 
@@ -71,19 +71,17 @@ void spray_pixels()
 
 	if(spray)
 	{	
-		for(count = 0;count < 1;count++)
+		for(count = 0;count < 3;count++)
 		{
 			if(particles[count].active == 0)
 			{	
-				particles[count].x = (Width / 2);
-				particles[count].y = (Height / 2);
+				particles[count].x = Width / 2;
+				particles[count].y = Height / 2;
 				
 				if(player.dir == 1)
 					particles[count].xv = 1;
 				else
 					particles[count].xv = -1;
-
-				particle.yv = 0;
 
 				particles[count].active = 1;
 			}
@@ -96,7 +94,6 @@ void update_spray()
 {
 	int count;
 
-
 	for(count = 0;count < max_particles;count++)
 	{
 				
@@ -105,6 +102,9 @@ void update_spray()
 			double factor = count - (max_particles - 1.0) / 2.0; //Makes top and bottom particles scatter by index number
 									     //Distance.y is divided to control length of scatter
 			particles[count].x += particles[count].xv;
+			particles[count].y = (Height / 2) + factor * particles[count].yv;
+
+			particles[count].yv++;
 		}
 		if(particles[count].x > Width || particles[count].x < 0)
 		{
