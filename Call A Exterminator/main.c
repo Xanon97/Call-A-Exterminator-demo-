@@ -55,9 +55,10 @@ struct Particles
 {
 	float x, y;
 	int xv, yv;
+	int spread;
 	int active;
 
-};
+}distance;
 
 struct Particles particles[max_particles] = {0};
 
@@ -71,10 +72,10 @@ void spray_pixels()
 
 	if(spray)
 	{	
-		for(count = 0;count < 3;count++)
+		for(count = 0;count < max_particles;count++)
 		{
 			if(particles[count].active == 0)
-			{	
+			{		
 				particles[count].x = Width / 2;
 				particles[count].y = Height / 2;
 				
@@ -82,6 +83,8 @@ void spray_pixels()
 					particles[count].xv = 1;
 				else
 					particles[count].xv = -1;
+				particles[count].yv = 1;
+				distance.x = 0;
 
 				particles[count].active = 1;
 			}
@@ -101,10 +104,12 @@ void update_spray()
 		{
 			double factor = count - (max_particles - 1.0) / 2.0; //Makes top and bottom particles scatter by index number
 									     //Distance.y is divided to control length of scatter
-			particles[count].x += particles[count].xv;
-			particles[count].y = (Height / 2) + factor * particles[count].yv;
+			particles[count].x += distance.x;
+			particles[count].y = (Height / 2) + factor * particles[count].spread / (max_particles / 2);
 
-			particles[count].yv++;
+			distance.x += particles[count].xv;
+
+			particles[count].spread += particles[count].yv;
 		}
 		if(particles[count].x > Width || particles[count].x < 0)
 		{
@@ -113,6 +118,8 @@ void update_spray()
 
 			particles[count].xv = 0;
 			particles[count].yv = 0;
+			distance.x = 0;
+			particles[count].spread = 0;
 
 			particles[count].active = 0;
 		}
